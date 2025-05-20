@@ -19,17 +19,18 @@
     <div hx-get="/books" hx-trigger="click" hx-target="#page-content" class="p-pointer">
       <span style="padding: 8px 0px; display: block;">Books</span>
     </div>
-    <div hx-get="/authors" hx-trigger="click" class="p-pointer">
-      <span style="padding: 8px 0px; display: block;">Authors</span>
+    <div hx-get="/authors" hx-trigger="click" hx-target="#page-content" class="p-pointer">
+      <span>Authors</span>
     </div>
-    <div hx-get="/years" hx-trigger="click" class="p-pointer">
-      <span style="padding: 8px 0px; display: block;">Years</span>
+    
+    <div hx-get="/years" hx-trigger="click" hx-target="#page-content" class="p-pointer">
+      <span>Years</span>
     </div>
     <div hx-get="/search" hx-trigger="click" hx-target="#page-content" class="p-pointer">
       <span style="padding: 8px 0px; display: block;">Search</span>
     </div>
-    <div hx-get="/create" hx-trigger="click" class="p-pointer">
-      <span style="padding: 8px 0px; display: block;">Create</span>
+    <div hx-get="/create" hx-trigger="click" hx-target="#page-content" class="p-pointer">
+      <span>Create</span>
     </div>
   </div>
   <div id="page-content" class="page-content"></div>
@@ -80,6 +81,54 @@
   </tr>
   {{ end }}
 </table>
+{{ end }}
+
+{{ block "authors" . }}
+<h2>List of Authors</h2>
+<table>
+  <tr>
+    <th>Author</th>
+  </tr>
+  {{ range . }}
+  <tr>
+    <td>{{ . }}</td>
+  </tr>
+  {{ end }}
+</table>
+{{ end }}
+
+{{ block "years" . }}
+<h2>List of Publication Years</h2>
+<table>
+  <tr>
+    <th>Year</th>
+  </tr>
+  {{ range . }}
+  <tr>
+    <td>{{ . }}</td>
+  </tr>
+  {{ end }}
+</table>
+{{ end }}
+
+{{ block "create-form" . }}
+<h2>Add a New Book</h2>
+<form
+  hx-post="/api/books"
+  hx-target="#form-response"
+  hx-swap="innerHTML"
+  class="form"
+>
+  <label>ID: <input type="text" name="ID" required /></label><br />
+  <label>Title: <input type="text" name="BookName" required /></label><br />
+  <label>Author: <input type="text" name="BookAuthor" required /></label><br />
+  <label>Pages: <input type="number" name="BookPages" /></label><br />
+  <label>Edition: <input type="text" name="BookEdition" /></label><br />
+  <label>Year: <input type="number" name="BookYear" /></label><br />
+  <button type="submit">Submit</button>
+</form>
+
+<div id="form-response" style="margin-top: 1em;"></div>
 {{ end }}
 
 
