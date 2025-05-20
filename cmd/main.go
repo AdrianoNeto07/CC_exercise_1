@@ -179,7 +179,7 @@ func main() {
 	defer cancel()
 
 	// TODO: make sure to pass the proper username, password, and port
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://134.149.50.32:27017"))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
 
 	// This is another way to specify the call of a function. You can define inline
 	// functions (or anonymous functions, similar to the behavior in Python)
