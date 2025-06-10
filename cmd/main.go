@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"slices"
 	"time"
+	"os"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -16,6 +17,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 // Defines a "model" that we can use to communicate with the
@@ -179,7 +181,24 @@ func main() {
 	defer cancel()
 
 	// TODO: make sure to pass the proper username, password, and port
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+	uri := os.Getenv("DATABASE_URI")
+	if len(uri) == 0 {
+		fmt.Printf("failure to load env variable\n")
+		os.Exit(1)
+	}
+
+	// TODO: make sure to pass the proper username, password, and port
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
+	if err != nil {
+		fmt.Printf("failed to create client for MongoDB\n")
+		os.Exit(1)
+	}
+
+	err = client.Ping(ctx, readpref.Primary())
+	if err != nil {
+		fmt.Printf("failed to connect to MongoDB, please make sure the database is running\n")
+		os.Exit(1)
+	}
 
 	// This is another way to specify the call of a function. You can define inline
 	// functions (or anonymous functions, similar to the behavior in Python)
@@ -191,7 +210,7 @@ func main() {
 
 	// You can use such name for the database and collection, or come up with
 	// one by yourself!
-	coll, err := prepareDatabase(client, "exercise-1", "information")
+	coll, err := prepareDatabase(client, "exercise-2", "information")
 
 	prepareData(client, coll)
 

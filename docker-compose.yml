@@ -1,0 +1,48 @@
+version: '3.8' # Specifies the Docker Compose file format version
+
+services:
+  # --- Your Go Application Service ---
+  go-app:
+    # Build the image from the Dockerfile in the current directory ('.')
+    # This means Docker Compose will build your 'exercise-2' image on the VM.
+    build:
+      context: . # The path to the build context (where your Dockerfile is)
+      dockerfile: Dockerfile # The name of your Dockerfile (default is 'Dockerfile')
+    
+    # Port mapping: "HOST_PORT:CONTAINER_PORT"
+    # This maps port 80 on your VM to port 8080 inside the 'go-app' container.
+    # So, you can access your Go app via http://your.vm.ip.address
+    ports:
+      - "3030:3030" # Change 80 to a different port if 80 is already in use or you prefer another.
+
+    # Environment variables for your Go application container
+    environment:
+      # This is crucial! Your Go app uses os.Getenv("DATABASE_URI")
+      # "mongodb" here is the service name of your MongoDB container (defined below).
+      # Docker Compose automatically creates a network where services can resolve each other by name.
+      DATABASE_URI: "mongodb://mongodb:27017" # The default port for MongoDB is 27017
+
+    # Ensure MongoDB starts before your Go application.
+    # This doesn't wait for MongoDB to be *fully ready*, just for its container to start.
+    depends_on:
+      - mongodb
+
+  # --- MongoDB Database Service ---
+  mongodb:
+    # Use the official MongoDB Docker image from Docker Hub.
+    # 'latest' will get the most recent stable version.
+    image: mongo:latest
+
+    # Data persistence for MongoDB using a named volume.
+    # This ensures your database data is saved even if the container is removed or updated.
+    volumes:
+      - mongo_data:/data/db # 'mongo_data' is the named volume, '/data/db' is MongoDB's default data directory.
+
+    # Restart policy: Always restart the MongoDB container if it stops for any reason.
+    restart: always
+
+# --- Named Volumes ---
+# Define the named volume used by the MongoDB service.
+# Docker manages these volumes, making data persistence easy.
+volumes:
+  mongo_data:
